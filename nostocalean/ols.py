@@ -27,7 +27,7 @@ class RegressionResult:
                 return str(base.summary(self.result))  # pylint: disable=no-member
             return str(base.summary(self.result, se=se))  # pylint: disable=no-member
 
-    def get_table(self):
+    def get_table(self) -> pd.DataFrame:
         """Return the coefficient table from a feols regression result."""
         return (
             self.result.rx["coeftable"][0]
@@ -71,6 +71,6 @@ def treg(
     data: pd.DataFrame,
     se: Optional[str] = "hetero",
     cluster: Optional[str] = None,
-):
+) -> pd.DataFrame:
     """Run a feols regression and return the coefficient table."""
     return feols(fml, data, se=se, cluster=cluster).get_table()
