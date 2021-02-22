@@ -2,12 +2,12 @@
 
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as f:
+with open("README.rst", "r") as f:
     long_description = f.read()
 
 setup(
     name="nostocalean",
-    version="0.0.2",
+    version="0.0.3",
     author="Suproteem Sarkar",
     packages=find_packages(),
     python_requires=">=3.5",
