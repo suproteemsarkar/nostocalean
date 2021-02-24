@@ -7,7 +7,7 @@ with open("README.rst", "r") as f:
 
 setup(
     name="nostocalean",
-    version="0.0.7",
+    version="0.0.8",
     author="Suproteem Sarkar",
     packages=find_packages(),
     python_requires=">=3.5",
