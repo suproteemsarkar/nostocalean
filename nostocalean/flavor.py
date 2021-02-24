@@ -1,7 +1,11 @@
 """Custom pandas_flavor methods."""
 
+from typing import Optional
+
 import pandas as pd
 import pandas_flavor as pf
+import matplotlib as mpl
+import seaborn as sns
 from pandas._typing import FilePathOrBuffer
 
 
@@ -9,6 +13,72 @@ from pandas._typing import FilePathOrBuffer
 def mem(df: pd.DataFrame) -> float:
     """Get the memory usage (in GB) of a dataframe."""
     return df.memory_usage().sum() / 1e9
+
+
+@pf.register_dataframe_method
+def tsg(
+    df: pd.DataFrame,
+    x: str,
+    y: str,
+    group: str,
+    agg: str = "sum",
+    i: int = 6,
+    e: int = -6,
+):
+    """Return a grouped time series given an outcome variable and aggregation function."""
+    return df.groupby([x, group])[y].agg(agg).reset_index()[i:e]
+
+
+@pf.register_dataframe_method
+def tsgr(
+    df: pd.DataFrame,
+    x: str,
+    y: str,
+    group: str,
+    agg: str = "sum",
+    resample: str = "4W",
+    i: int = 6,
+    e: int = -6,
+):
+    """Return a grouped time series given an outcome variable, resample window, and aggregation function."""
+    return (
+        df.set_index(x).groupby(group)[y].resample(resample).agg(agg).reset_index()[i:e]
+    )
+
+
+@pf.register_dataframe_method
+def ts(
+    df: pd.DataFrame,
+    x: str,
+    y: str,
+    group: str,
+    agg: str = "sum",
+    i: int = 6,
+    e: int = -6,
+    *args,
+    **kwargs,
+) -> mpl.axes.Axes:
+    """Return a time series plot given an outcome variable and aggregation function."""
+    series = df.tsg(x=x, y=y, group=group, agg=agg, i=i, e=e)
+    return sns.lineplot(data=series, x=x, y=y, hue=group, *args, **kwargs)
+
+
+@pf.register_dataframe_method
+def tsr(
+    df: pd.DataFrame,
+    x: str,
+    y: str,
+    group: str,
+    agg: str = "sum",
+    resample: str = "4W",
+    i: int = 6,
+    e: int = -6,
+    *args,
+    **kwargs,
+) -> mpl.axes.Axes:
+    """Return a time series plot given an outcome variable, resample window, and aggregation function."""
+    series = df.tsgr(x=x, y=y, group=group, agg=agg, resample=resample, i=i, e=e)
+    return sns.lineplot(data=series, x=x, y=y, hue=group, *args, **kwargs)
 
 
 @pf.register_dataframe_method
