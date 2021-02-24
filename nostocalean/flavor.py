@@ -6,7 +6,6 @@ import pandas as pd
 import pandas_flavor as pf
 import matplotlib as mpl
 import seaborn as sns
-from pandas._typing import FilePathOrBuffer
 
 
 @pf.register_dataframe_method
@@ -84,7 +83,7 @@ def tsr(
 
 
 @pf.register_dataframe_method
-def write_parquet(df: pd.DataFrame, path: FilePathOrBuffer) -> None:
+def write_parquet(df: pd.DataFrame, path: str) -> None:
     """Write a dataframe to a path as a parquet."""
     try:
         df.to_parquet(
