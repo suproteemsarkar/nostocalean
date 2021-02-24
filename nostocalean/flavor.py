@@ -59,12 +59,11 @@ def ts(
     agg: str = "sum",
     i: int = 1,
     e: int = 1,
-    *args,
     **kwargs,
 ) -> mpl.axes.Axes:
     """Return a time series plot given an outcome variable and aggregation function."""
     series = df.tsg(x=x, y=y, group=group, agg=agg, i=i, e=e)
-    return sns.lineplot(data=series, x=x, y=y, hue=group, *args, **kwargs)
+    return sns.lineplot(data=series, x=x, y=y, hue=group, **kwargs)
 
 
 @pf.register_dataframe_method
@@ -77,12 +76,11 @@ def tsr(
     resample: str = "4W",
     i: int = 1,
     e: int = 1,
-    *args,
     **kwargs,
 ) -> mpl.axes.Axes:
     """Return a time series plot given an outcome variable, resample window, and aggregation function."""
     series = df.tsgr(x=x, y=y, group=group, agg=agg, resample=resample, i=i, e=e)
-    return sns.lineplot(data=series, x=x, y=y, hue=group, *args, **kwargs)
+    return sns.lineplot(data=series, x=x, y=y, hue=group, **kwargs)
 
 
 @pf.register_dataframe_method

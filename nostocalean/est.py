@@ -75,11 +75,11 @@ def feglm(
     return RegressionResult(result, se=se)
 
 
-def reg(**kwargs) -> str:
+def reg(*args, **kwargs) -> str:
     """Run a feols regression and return the summary."""
-    return feols(**kwargs).summary()
+    return feols(*args, **kwargs).summary()
 
 
-def treg(**kwargs) -> pd.DataFrame:
+def treg(*args, **kwargs) -> pd.DataFrame:
     """Run a feols regression and return the coefficient table."""
-    return feols(**kwargs).get_table()
+    return feols(*args, **kwargs).get_table()
