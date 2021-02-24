@@ -22,11 +22,14 @@ def tsg(
     y: str,
     group: str,
     agg: str = "sum",
-    i: int = 6,
-    e: int = -6,
+    i: int = 1,
+    e: int = 1,
 ):
     """Return a grouped time series given an outcome variable and aggregation function."""
-    return df.groupby([x, group])[y].agg(agg).reset_index()[i:e]
+    series = df.groupby([x, group])[y].agg(agg).reset_index()
+    T = series[x].nunique()
+    series = series.groupby(group).head(T - i).groupby(group).tail(T - i - e)
+    return series
 
 
 @pf.register_dataframe_method
@@ -37,13 +40,14 @@ def tsgr(
     group: str,
     agg: str = "sum",
     resample: str = "4W",
-    i: int = 6,
-    e: int = -6,
+    i: int = 1,
+    e: int = 1,
 ):
     """Return a grouped time series given an outcome variable, resample window, and aggregation function."""
-    return (
-        df.set_index(x).groupby(group)[y].resample(resample).agg(agg).reset_index()[i:e]
-    )
+    series = df.set_index(x).groupby(group)[y].resample(resample).agg(agg).reset_index()
+    T = series[x].nunique()
+    series = series.groupby(group).head(T - i).groupby(group).tail(T - i - e)
+    return series
 
 
 @pf.register_dataframe_method
@@ -53,8 +57,8 @@ def ts(
     y: str,
     group: str,
     agg: str = "sum",
-    i: int = 6,
-    e: int = -6,
+    i: int = 1,
+    e: int = 1,
     *args,
     **kwargs,
 ) -> mpl.axes.Axes:
@@ -71,8 +75,8 @@ def tsr(
     group: str,
     agg: str = "sum",
     resample: str = "4W",
-    i: int = 6,
-    e: int = -6,
+    i: int = 1,
+    e: int = 1,
     *args,
     **kwargs,
 ) -> mpl.axes.Axes:
