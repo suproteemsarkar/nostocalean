@@ -1,5 +1,6 @@
 """Methods for calling fixest using rpy2."""
 
+import re
 from typing import Optional, TypeVar
 
 from rpy2.robjects import Formula, pandas2ri
@@ -50,8 +51,10 @@ def feols(
     if se == None:
         se = "cluster" if "cluster" in kwargs else "hetero"
 
+    columns = re.findall(r"[\w']+", fml)
+
     # fmt: off
-    result  = fixest.feols(Formula(fml), data=data, se=se, **kwargs) # pylint: disable=no-member
+    result  = fixest.feols(Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
     # fmt: on
 
     return RegressionResult(result, se=se)
@@ -68,8 +71,10 @@ def feglm(
     if se is None:
         se = "cluster" if "cluster" in kwargs else "hetero"
 
+    columns = re.findall(r"[\w']+", fml)
+
     # fmt: off
-    result  = fixest.feglm(Formula(fml), data=data, se=se, **kwargs) # pylint: disable=no-member
+    result  = fixest.feglm(Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
     # fmt: on
 
     return RegressionResult(result, se=se)
@@ -78,6 +83,11 @@ def feglm(
 def reg(*args, **kwargs) -> str:
     """Run a feols regression and return the summary."""
     return feols(*args, **kwargs).summary()
+
+
+def preg(*args, **kwargs) -> None:
+    """Run a feols regression and print the summary."""
+    print(feols(*args, **kwargs).summary())
 
 
 def treg(*args, **kwargs) -> pd.DataFrame:
