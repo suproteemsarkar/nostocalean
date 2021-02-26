@@ -48,7 +48,7 @@ def feols(
 ) -> RegressionResult:
     """Wrapper for calling fixest::feols in R."""
 
-    if se == None:
+    if se is None:
         se = "cluster" if "cluster" in kwargs else "hetero"
 
     columns = re.findall(r"[\w']+", fml)
