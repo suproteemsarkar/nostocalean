@@ -13,12 +13,13 @@ class ContainerConfig:
     """Container location and cache path config."""
 
     def __init__(self):
+        self.container_path = None
+        self.cache_path = None
         try:
             self.container_path = Path(os.environ["R_CONTAINER_PATH"]).resolve()
             self.cache_path = Path(os.environ["R_DATASET_PATH"]).resolve()
         except KeyError:
-            self.container_path = None
-            self.cache_path = None
+            pass
 
 
 config = ContainerConfig()
