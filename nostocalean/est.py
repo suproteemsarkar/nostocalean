@@ -3,12 +3,12 @@
 import re
 from typing import Optional, TypeVar
 
-from rpy2.robjects import Formula, pandas2ri
+from rpy2.robjects import Formula, pandas2ri, vectors
 from rpy2.robjects.packages import importr
 import pandas as pd
 from .functions import clean_name, suppress
 
-FixestResult = TypeVar("FixestResult")
+FixestResult = TypeVar("FixestResult", vectors.ListVector)
 
 base = importr("base")
 fixest = importr("fixest")

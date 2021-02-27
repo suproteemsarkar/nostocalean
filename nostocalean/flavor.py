@@ -1,17 +1,30 @@
 """Custom pandas_flavor methods."""
 
-from typing import Optional
+from typing import Optional, TypeVar
 
 import pandas as pd
 import pandas_flavor as pf
+import numpy as np
 import matplotlib as mpl
 import seaborn as sns
 
+FrameOrSeries = TypeVar("FrameOrSeries", pd.DataFrame, pd.Series)
+
 
 @pf.register_dataframe_method
-def mem(df: pd.DataFrame) -> float:
-    """Get the memory usage (in GB) of a dataframe."""
-    return df.memory_usage().sum() / 1e9
+@pf.register_series_method
+def mem(df: FrameOrSeries) -> float:
+    """Get the memory usage (in GB) of a dataframe or series."""
+    if isinstance(df, pd.DataFrame):
+        return df.memory_usage().sum() / 1e9
+    return df.memory_usage() / 1e9
+
+
+@pf.register_dataframe_method
+@pf.register_series_method
+def desc(df: FrameOrSeries, increment: float = 0.1) -> FrameOrSeries:
+    """Calls pandas describe with a specified percentile increment."""
+    return df.describe(percentiles=np.arange(increment, 1, increment))
 
 
 @pf.register_dataframe_method
@@ -23,7 +36,7 @@ def tsg(
     agg: str = "sum",
     i: int = 1,
     e: int = 1,
-):
+) -> pd.Series:
     """Return a grouped time series given an outcome variable and aggregation function."""
     series = df.groupby([x, group])[y].agg(agg).reset_index()
     T = series[x].nunique()
@@ -41,7 +54,7 @@ def tsgr(
     resample: str = "4W",
     i: int = 1,
     e: int = 1,
-):
+) -> pd.Series:
     """Return a grouped time series given an outcome variable, resample window, and aggregation function."""
     series = df.set_index(x).groupby(group)[y].resample(resample).agg(agg).reset_index()
     T = series[x].nunique()
