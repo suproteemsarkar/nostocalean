@@ -3,22 +3,21 @@
 import re
 from typing import Optional, TypeVar
 
-from rpy2.robjects import Formula, pandas2ri, vectors
-from rpy2.robjects.packages import importr
+from rpy2 import robjects
+from rpy2.robjects import packages
 import pandas as pd
-from .functions import clean_name, suppress
+from nostocalean.functions import clean_name, suppress
 
-FixestResult = TypeVar("FixestResult", vectors.ListVector)
+RegressionResult = TypeVar("RegressionResult", bound=robjects.vectors.ListVector)
 
-base = importr("base")
-fixest = importr("fixest")
-pandas2ri.activate()
+base = packages.importr("base")
+fixest = packages.importr("fixest")
 
 
-class RegressionResult:
+class FixestResult:
     """Accessors for a fixest result."""
 
-    def __init__(self, result: FixestResult, se: str):
+    def __init__(self, result: robjects.vectors.ListVector, se: str):
         self.result = result
         self.rx = self.result.rx
         self.se = se
@@ -45,7 +44,7 @@ def feols(
     data: pd.DataFrame,
     se: Optional[str] = None,
     **kwargs,
-) -> RegressionResult:
+) -> FixestResult:
     """Wrapper for calling fixest::feols in R."""
 
     if se is None:
@@ -54,10 +53,10 @@ def feols(
     columns = list(set(re.findall(r"[\w']+", fml)))
 
     # fmt: off
-    result  = fixest.feols(Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
+    result  = fixest.feols(robjects.Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
     # fmt: on
 
-    return RegressionResult(result, se=se)
+    return FixestResult(result, se=se)
 
 
 def feglm(
@@ -65,7 +64,7 @@ def feglm(
     data: pd.DataFrame,
     se: Optional[str] = None,
     **kwargs,
-) -> RegressionResult:
+) -> FixestResult:
     """Wrapper for calling fixest::feglm in R."""
 
     if se is None:
@@ -74,10 +73,10 @@ def feglm(
     columns = list(set(re.findall(r"[\w']+", fml)))
 
     # fmt: off
-    result  = fixest.feglm(Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
+    result  = fixest.feglm(robjects.Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
     # fmt: on
 
-    return RegressionResult(result, se=se)
+    return FixestResult(result, se=se)
 
 
 def reg(*args, **kwargs) -> str:
