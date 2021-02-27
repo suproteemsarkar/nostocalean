@@ -51,7 +51,7 @@ def feols(
     if se is None:
         se = "cluster" if "cluster" in kwargs else "hetero"
 
-    columns = re.findall(r"[\w']+", fml)
+    columns = list(set(re.findall(r"[\w']+", fml)))
 
     # fmt: off
     result  = fixest.feols(Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
@@ -71,7 +71,7 @@ def feglm(
     if se is None:
         se = "cluster" if "cluster" in kwargs else "hetero"
 
-    columns = re.findall(r"[\w']+", fml)
+    columns = list(set(re.findall(r"[\w']+", fml)))
 
     # fmt: off
     result  = fixest.feglm(Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member

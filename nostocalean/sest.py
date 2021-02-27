@@ -37,7 +37,7 @@ def reg(fml: str, data: pd.DataFrame, se: str = "hetero", no_cache: bool = False
     else:
         cache_path = config.cache_path
 
-    columns = re.findall(r"[\w']+", fml)
+    columns = list(set(re.findall(r"[\w']+", fml)))
     df = data[columns]
     df_hash = "_".join(pd.util.hash_pandas_object(df).astype(str))
 
