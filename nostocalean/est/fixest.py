@@ -1,14 +1,14 @@
 """Methods for calling fixest using rpy2."""
 
 import re
-from typing import Optional, TypeVar
+from typing import Optional
 
 from rpy2 import robjects
 from rpy2.robjects import packages
 import pandas as pd
 from nostocalean.functions import clean_name, suppress
 
-RegressionResult = TypeVar("RegressionResult", bound=robjects.vectors.ListVector)
+RegressionResult = robjects.vectors.ListVector
 
 base = packages.importr("base")
 fixest = packages.importr("fixest")

@@ -1,14 +1,11 @@
 """Methods for calling did using rpy2."""
 
-import re
-from typing import Optional, TypeVar
-
 from rpy2 import robjects
 from rpy2.robjects import packages
 import pandas as pd
-from nostocalean.functions import clean_name, suppress
+from nostocalean.functions import suppress
 
-RegressionResult = TypeVar("RegressionResult", bound=robjects.vectors.ListVector)
+RegressionResult = robjects.vectors.ListVector
 
 base = packages.importr("base")
 did_base = packages.importr("did")
@@ -38,7 +35,7 @@ class DidResult:
             # fmt: on
 
 
-def att_gt(y: str, d: str, g: str, t: str, data: pd.DataFrame, **kwargs):
+def att_gt(y: str, d: str, g: str, t: str, data: pd.DataFrame, **kwargs) -> DidResult:
     """Wrapper for calling did::att_gt in R."""
     if "covariates" in kwargs:
         kwargs["covariates"] = robjects.Formula("~" + "+".join(kwargs["covariates"]))
@@ -50,21 +47,21 @@ def att_gt(y: str, d: str, g: str, t: str, data: pd.DataFrame, **kwargs):
     return DidResult(result)
 
 
-def did(*args, **kwargs):
+def did(*args, **kwargs) -> str:
     """Estimate group-time treatment effects and return the summary."""
     return att_gt(*args, **kwargs).summary()
 
 
-def pdid(*args, **kwargs):
+def pdid(*args, **kwargs) -> str:
     """Estimate group-time treatment effects and print the summary."""
     print(att_gt(*args, **kwargs).summary())
 
 
-def es(*args, **kwargs):
+def es(*args, **kwargs) -> str:
     """Estimate dynamic effects and return the summary."""
     return att_gt(*args, **kwargs).es_summary()
 
 
-def pes(*args, **kwargs):
+def pes(*args, **kwargs) -> str:
     """Estimate dynamic effects and print the summary."""
     print(att_gt(*args, **kwargs).es_summary())
