@@ -13,11 +13,11 @@ FrameOrSeries = TypeVar("FrameOrSeries", pd.DataFrame, pd.Series)
 
 @pf.register_dataframe_method
 @pf.register_series_method
-def mem(df: FrameOrSeries) -> float:
+def mem(df: FrameOrSeries, deep: bool = True) -> float:
     """Get the memory usage (in GB) of a dataframe or series."""
     if isinstance(df, pd.DataFrame):
-        return df.memory_usage().sum() / 1e9
-    return df.memory_usage() / 1e9
+        return df.memory_usage(deep=deep).sum() / 1e9
+    return df.memory_usage(deep=deep) / 1e9
 
 
 @pf.register_dataframe_method
