@@ -27,6 +27,25 @@ def desc(df: FrameOrSeries, increment: float = 0.1) -> FrameOrSeries:
     return df.describe(percentiles=np.arange(increment, 1, increment))
 
 
+@pf.register_series_method
+def normalize(series: pd.Series) -> pd.Series:
+    """Normalizes a series."""
+    return (series - series.mean()) / series.std()
+
+
+@pf.register_series_method
+def winsorize(series: pd.Series, left: float = 1, right: float = 1) -> pd.Series:
+    """Winsorizes a series at the provided percentiles."""
+    values = series.dropna()
+    left_cutoff = np.percentile(values, left)
+    right_cutoff = np.percentile(values, 100 - right)
+
+    series = series.copy()
+    series[series < left_cutoff] = left_cutoff
+    series[series > right_cutoff] = right_cutoff
+    return series
+
+
 @pf.register_dataframe_method
 def tsg(
     df: pd.DataFrame,
