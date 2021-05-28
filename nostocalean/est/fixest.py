@@ -53,9 +53,15 @@ def feols(
     columns = set(re.findall(r"[\w']+", fml))
     columns = [column for column in columns if column != "1"]
 
-    # fmt: off
-    result  = fixest.feols(robjects.Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
-    # fmt: on
+    if "cluster" in kwargs:
+        columns = columns + list(set(re.findall(r"[\w']+", kwargs["cluster"])))
+
+    result = fixest.feols(  # pylint: disable=no-member
+        robjects.Formula(fml),
+        data=data[columns].dropna(subset=columns),
+        se=se,
+        **kwargs,
+    )
 
     return FixestResult(result, se=se)
 
@@ -74,9 +80,15 @@ def feglm(
     columns = set(re.findall(r"[\w']+", fml))
     columns = [column for column in columns if column != "1"]
 
-    # fmt: off
-    result  = fixest.feglm(robjects.Formula(fml), data=data[columns], se=se, **kwargs) # pylint: disable=no-member
-    # fmt: on
+    if "cluster" in kwargs:
+        columns = columns + list(set(re.findall(r"[\w']+", kwargs["cluster"])))
+
+    result = fixest.feglm(  # pylint: disable=no-member
+        robjects.Formula(fml),
+        data=data[columns].dropna(subset=columns),
+        se=se,
+        **kwargs,
+    )
 
     return FixestResult(result, se=se)
 

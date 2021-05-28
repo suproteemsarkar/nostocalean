@@ -2,4 +2,4 @@
 
 from .functions import clean_name, lmap, skipna, suppress
 from .plotting import palette
-from .flavor import mem
+from .flavor import mem, normalize, winsorize
