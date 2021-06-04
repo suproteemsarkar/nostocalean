@@ -34,6 +34,14 @@ def normalize(series: pd.Series) -> pd.Series:
 
 
 @pf.register_series_method
+def rescale(series: pd.Series, upper: float = 0, lower: float = 1) -> pd.Series:
+    """Rescales a series."""
+    return lower + (upper - lower) * (
+        (series - series.min()) / (series.max() - series.min())
+    )
+
+
+@pf.register_series_method
 def winsorize(series: pd.Series, left: float = 1, right: float = 1) -> pd.Series:
     """Winsorizes a series at the provided percentiles."""
     values = series.dropna()
