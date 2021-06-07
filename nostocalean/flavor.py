@@ -1,6 +1,6 @@
 """Custom pandas_flavor methods."""
 
-from typing import Optional, TypeVar
+from typing import List, Optional, TypeVar, Union
 
 import pandas as pd
 import pandas_flavor as pf
@@ -52,6 +52,31 @@ def winsorize(series: pd.Series, left: float = 1, right: float = 1) -> pd.Series
     series[series < left_cutoff] = left_cutoff
     series[series > right_cutoff] = right_cutoff
     return series
+
+
+@pf.register_dataframe_method
+def left_merge(
+    df: pd.DataFrame,
+    other: Union[pd.DataFrame, pd.Series],
+    on: Union[List[str], str],
+    right_columns: Union[List[str], str, None] = None,
+) -> pd.DataFrame:
+    """Convenience in-place method for left merge that avoids copying irrelevant columns."""
+    if isinstance(on, str):
+        on = [on]
+
+    if isinstance(other, pd.DataFrame):
+        addition = df[on].merge(other, on=on, how="left")
+    else:
+        addition = df[on].merge(other, left_on=on, right_index=True, how="left")
+
+    if right_columns is None:
+        right_columns = addition.columns
+    elif isinstance(right_columns, str):
+        right_columns = [right_columns]
+    for column in addition.columns:
+        if column not in on and column in right_columns:
+            df[column] = addition[column].values
 
 
 @pf.register_dataframe_method

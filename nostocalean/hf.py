@@ -6,10 +6,12 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import pandas as pd
 from sklearn import metrics
 
-def to_device(inputs: dict, device=0):
+
+def to_device(inputs: dict, device: int = 0):
     return {
         k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in inputs.items()
     }
+
 
 class ClassificationDataset(torch.utils.data.Dataset):
     def __init__(
@@ -26,10 +28,10 @@ class ClassificationDataset(torch.utils.data.Dataset):
             padding="max_length",
             truncation=True,
         )
-        self.label = self.data[label_col]
+        self.labels = self.data[label_col]
 
     def __len__(self):
-        return len(self.label)
+        return len(self.labels)
 
     def __getitem__(self, index):
         inputs = {
@@ -37,13 +39,13 @@ class ClassificationDataset(torch.utils.data.Dataset):
             for key, val in self.encodings.items()
         }
         inputs["labels"] = torch.tensor(  # pylint: disable=not-callable
-            self.label.iloc[index]
+            self.labels.iloc[index]
         )
         return inputs
 
 
 class SentimentModel:
-    def __init__(self, device=0):
+    def __init__(self, device: int = 0):
         self.device = device
         self.model = AutoModelForSequenceClassification.from_pretrained(
             "distilbert-base-uncased-finetuned-sst-2-english"
@@ -55,9 +57,12 @@ class SentimentModel:
     def __call__(self, text: str):
         with torch.no_grad():
             inputs = self.tokenizer(
-                text, return_tensors="pt", padding="max_length", truncation=True
+                text,
+                return_tensors="pt",
+                padding="max_length",
+                truncation=True,
             )
-            inputs = to_device(inputs)
+            inputs = to_device(inputs, self.device)
             outputs = self.model(**inputs)
             prediction = (
                 outputs.logits.softmax(dim=-1).detach().cpu().numpy().flatten()[1]
