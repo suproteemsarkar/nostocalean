@@ -16,7 +16,7 @@ run a regression of ``y`` on ``x`` with group fixed effects, and double cluster:
 
     from nostocalean import est
     
-    summary = est.reg("y ~ x | group_a + group_b", data=df, se="twoway")
+    summary = est.reg("y ~ x | group_a + group_b", data=df, cluster="~group_a+group_b")
     print(summary)
 
 Example: Given a dataframe ``df`` with columns ``y, first_treat, group, time``
@@ -35,5 +35,5 @@ Example: To sample a utility function, run:
 
 .. code-block:: python
 
-    from nostocalean.utility_functions import get_utility_function
-    get_utility_function()
+    from nostocalean import utility_functions
+    utility_functions.get_utility_function()
