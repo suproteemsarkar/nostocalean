@@ -66,7 +66,7 @@ def feols(
     columns = set(re.findall(r"[\w']+", fml))
     columns = [column for column in columns if column != "1"]
 
-    for key in ["cluster", "panel_id"]:
+    for key in ["cluster", "panel_id", "split", "weights"]:
         if key in kwargs:
             columns = list(set(columns + re.findall(r"[\w']+", kwargs[key])))
             if kwargs[key][0] == "~":
@@ -94,7 +94,7 @@ def feglm(
     columns = set(re.findall(r"[\w']+", fml))
     columns = [column for column in columns if column != "1"]
 
-    for key in ["cluster", "panel_id"]:
+    for key in ["cluster", "panel_id", "split", "weights"]:
         if key in kwargs:
             columns = list(set(columns + re.findall(r"[\w']+", kwargs[key])))
             if kwargs[key][0] == "~":
