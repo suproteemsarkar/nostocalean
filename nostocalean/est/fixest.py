@@ -71,7 +71,7 @@ def feols(
             columns = list(set(columns + re.findall(r"[\w']+", kwargs[key])))
             if kwargs[key][0] == "~":
                 kwargs[key] = robjects.Formula(kwargs[key])
-    if any(s in kwargs["vcov"] for s in ["DK(", "NW(", "conley("]):
+    if any(s in kwargs.get("vcov", "") for s in ["DK(", "NW(", "conley("]):
         kwargs["vcov"] = robjects.r(kwargs["vcov"])
 
     result = fixest.feols(  # pylint: disable=no-member
